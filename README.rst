@@ -2,9 +2,9 @@
    If you want to learn more about writing documentation, please check out: http://docs.plone.org/about/documentation_styleguide_addons.html
    This text does not appear on pypi or github. It is a comment.
 
-==============================================================================
+============================
 plonewebcomponent.midiplayer
-==============================================================================
+============================
 
 Tell me what your product does
 
@@ -70,3 +70,28 @@ License
 -------
 
 The project is licensed under the GPLv2.
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+    <metal:content-core fill-slot="content-core">
+<link rel="import" href="++resource++midiplayer/midi-player.html">
+
+<midi-player url="++resource++midiplayer/ColmanCross1.mid"></midi-player>
+
+    </metal:content-core>
+
+</body>
+</html>
+
+
