@@ -1,0 +1,5 @@
+====================
+plonewebcomponent.midiplayer
+====================
+
+User documentation

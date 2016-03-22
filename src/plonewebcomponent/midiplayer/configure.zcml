@@ -1,0 +1,57 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="plonewebcomponent.midiplayer">
+
+  <includeDependencies package="." />
+
+  <i18n:registerTranslations directory="locales" />
+
+  <include package=".browser" />
+
+  <browser:resourceDirectory
+      name="midiplayer"
+      directory="resources" />
+
+  <cmf:registerDirectory name="midi-player" recursive="True"/>
+
+  <genericsetup:registerProfile
+      name="default"
+      title="plonewebcomponent.midiplayer"
+      directory="profiles/default"
+      description="Installs the plonewebcomponent.midiplayer add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:importStep
+      name="plonewebcomponent.midiplayer-postInstall"
+      title="plonewebcomponent.midiplayer post_install import step"
+      description="Post install import step from plonewebcomponent.midiplayer"
+      handler=".setuphandlers.post_install">
+  </genericsetup:importStep>
+
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="plonewebcomponent.midiplayer"
+      directory="profiles/uninstall"
+      description="Uninstalls the plonewebcomponent.midiplayer add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:importStep
+      name="plonewebcomponent.midiplayer-uninstall"
+      title="plonewebcomponent.midiplayer uninstall import step"
+      description="Import step run during ininstalling plonewebcomponent.midiplayer"
+      handler=".setuphandlers.uninstall">
+  </genericsetup:importStep>
+
+  <utility
+      factory=".setuphandlers.HiddenProfiles"
+      name="plonewebcomponent.midiplayer-hiddenprofiles" />
+
+</configure>

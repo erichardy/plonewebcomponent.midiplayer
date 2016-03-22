@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<layers>
+  <layer
+      name="plonewebcomponent.midiplayer"
+      interface="plonewebcomponent.midiplayer.interfaces.IPlonewebcomponentMidiplayerLayer"
+      />
+</layers>
