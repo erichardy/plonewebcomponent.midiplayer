@@ -9,9 +9,10 @@
 <body>
 
     <metal:content-core fill-slot="content-core">
-<link rel="import" href="++resource++midiplayer/midi-player.html">
-
-<midi-player url="++resource++midiplayer/ColmanCross1.mid"></midi-player>
+    <link rel="import" href="++resource++midiplayer/midi-player.html">
+    <span tal:define="base string:${context/portal_url}"
+          tal:content="string:${base}">bbaassee</span>
+        <midi-player base="AAZZEE" url="++resource++midiplayer/ColmanCross1.mid"></midi-player>
 
     </metal:content-core>
 

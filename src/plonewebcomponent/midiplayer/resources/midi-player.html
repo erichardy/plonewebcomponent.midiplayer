@@ -10,7 +10,7 @@ A Polymer custom element that provides MIDI file playback.
 @element midi-player
 @homepage https://github.com/miztroh/midi-player
 -->
-<polymer-element name="midi-player" attributes="currentTime endTime playing url statusMessage">
+<polymer-element name="midi-player" attributes="currentTime endTime playing url base statusMessage">
 	<template>
 		<style>
 			:host {
@@ -25,6 +25,7 @@ A Polymer custom element that provides MIDI file playback.
 				color: red;
 			}
 		</style>
+
 		<div id="container">
 		<div id="slider" min="0" max="1" value="0" on-core-change="{{seek}}" disabled="True" flex>Slider</div>
 		<!--
@@ -63,7 +64,8 @@ A Polymer custom element that provides MIDI file playback.
 	<script src="++resource++midiplayer/bower_components/MIDI.js/inc/jasmid/midifile.js"></script>
 	<script src="++resource++midiplayer/bower_components/MIDI.js/inc/jasmid/replayer.js"></script>
 	<script>
-		(
+	
+	(
 			function () {
 				var count = 0;
 				var last_player;
@@ -71,7 +73,7 @@ A Polymer custom element that provides MIDI file playback.
 				var endTime = [];
 				var playing = [];
 				var url = [];
-
+				var base = [];
 				var midi_player_start = MIDI.Player.start;
 
 				MIDI.Player.start = function (new_player) {
@@ -169,6 +171,9 @@ A Polymer custom element that provides MIDI file playback.
 		        *
 		        * @property playing
 		        * @type Boolean
+		        *
+		        * @property base
+		        * @type String
 		        */
 						currentTimeChanged: function (oldValue, newValue) {
 							if (this.currentTime !== currentTime[this.index]) {
