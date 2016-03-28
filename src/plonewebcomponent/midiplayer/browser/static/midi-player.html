@@ -1,0 +1,430 @@
+<link rel="import" href="++plone++midiplayer/bower_components/polymer/polymer.html">
+<!--
+<link rel="import" href="bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="++plone++midiplayer/bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="++plone++midiplayer/bower_components/core-icons/av-icons.html">
+-->
+<!--
+A Polymer custom element that provides MIDI file playback.
+
+@element midi-player
+@homepage https://github.com/miztroh/midi-player
+-->
+<polymer-element name="midi-player" attributes="currentTime endTime playing url SoundFontBase statusMessage">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+
+			:host::shadow #statusMessage {
+				padding: 0 16px;
+			}
+
+			:host::shadow .error #statusMessage {
+				color: red;
+			}
+		</style>
+
+		<div id="container">
+		<div id="slider" min="0" max="1" value="0" on-core-change="{{seek}}" disabled="True" flex>Slider</div>
+		<!--
+			<div layout horizontal>
+				<paper-slider id="slider" min="0" max="1" on-core-change="{{seek}}" flex></paper-slider>
+			</div>
+         -->
+			<template if="{{$.slider.disabled}}">
+				<div id="statusMessage">{{statusMessage}}</div>
+			</template>
+			<template if="{{!$.slider.disabled}}">
+				<div layout horizontal>
+					<template if="{{!playing}}">
+						<button on-click="{{play}}">Play</button>
+					</template>
+					<template if="{{playing}}">
+						<button on-click="{{pause}}">Pause</button>
+					</template>
+					<template if="{{currentTime > 0}}">
+						<button on-click="{{stop}}">Stop</button>
+					</template>
+					<span flex></span>
+					<div style="line-height: 40px; padding-right: 16px;">{{minutesAndSeconds(currentTime)}} / {{minutesAndSeconds(endTime)}}</div>
+				</div>
+			</template>
+		</div>
+	</template>
+	<script>
+	
+	(
+			function () {
+				var count = 0;
+				var last_player;
+				var currentTime = [];
+				var endTime = [];
+				var playing = [];
+				var url = [];
+				var SoundFontBase = [];
+				var midi_player_start = MIDI.Player.start;
+
+				MIDI.Player.start = function (new_player) {
+					midi_player_start();
+					if (new_player && new_player.index >= 0) last_player = new_player;
+				};
+
+				var midi_player_pause = MIDI.Player.pause;
+
+				MIDI.Player.pause = function (new_player) {
+					midi_player_pause();
+					if (new_player && new_player.index >= 0) last_player = new_player;
+				};
+
+				var midi_player_stop = MIDI.Player.stop;
+
+				MIDI.Player.stop = function (new_player) {
+					midi_player_stop();
+					if (new_player && new_player.index >= 0) last_player = new_player;
+				};
+
+				var midi_player_resume = MIDI.Player.resume;
+
+				MIDI.Player.resume = function (new_player) {
+					midi_player_resume();
+					if (new_player && new_player.index >= 0) last_player = new_player;
+				};
+
+				document.addEventListener(
+					'polymer-ready',
+					function () {
+						$("#SoundFontBase").css("display", "none");
+						sfb = $("#SoundFontBase").html();
+						MIDI.loadPlugin(
+							{
+								// soundfontUrl: "../../bower_components/MIDI.js/soundfont/",
+								soundfontUrl: sfb + "/++plone++midiplayer/soundfont/",
+								instrument: "acoustic_grand_piano",
+								callback: function () {}
+							}
+						);
+					}
+				);
+
+				MIDI.Player.addListener(
+					function (data) {
+						if (last_player && MIDI.Player.playing) {
+							// console.log("data.now :" + data.now);
+							// console.log("data.end :" + data.end);
+							if (data.now === data.end) {
+								last_player.$.slider.value = parseInt(data.end);
+
+								setTimeout(
+									function () {
+										last_player.stop();
+									},
+									250
+								);
+							} else {
+								currentTime[last_player.index] = data.now;
+								last_player.currentTime = data.now;
+
+								if (last_player.$.slider.value === last_player.$.slider.immediateValue) {
+									last_player.$.slider.value = parseInt(data.now);
+								} else {
+									// console.log('PPPause !');
+									// last_player.pause();
+									playing[last_player.index] = true;
+								}
+							}
+						}
+					}
+				);
+
+				Polymer(
+					{
+						ready: function() {
+							console.log('RADYYYYY!! ');
+						},
+						/**
+		        * The current point of playback in milliseconds.
+		        *
+		        * @property currentTime
+		        * @type Number
+		        */
+						/**
+		        * The length of the MIDI file in milliseconds.
+		        *
+		        * @property endTime
+		        * @type Number
+		        */
+						/**
+		        * The URL from which the MIDI file should be loaded.
+		        *
+		        * @property url
+		        * @type String
+		        */
+						/**
+		        * Whether or not playback is occurring.
+		        *
+		        * @property playing
+		        * @type Boolean
+		        *
+		        * @property base
+		        * @type String
+		        */
+						currentTimeChanged: function (oldValue, newValue) {
+							if (this.currentTime !== currentTime[this.index]) {
+								this.currentTime = currentTime[this.index];
+								return;
+							}
+						},
+						endTimeChanged: function (oldValue, newValue) {
+							if (this.endTime !== endTime[this.index]) {
+								this.endTime = endTime[this.index];
+								return;
+							}
+						},
+						/**
+		         * Load the MIDI file from the `url`.
+		         *
+		         * @method load
+		         * @param {Function} callback A function to call after the MIDI file is loaded.
+		         */
+						load: function (callback) {
+							var that = this;
+console.log(this.SoundFontBase);
+							if (this.url.length === 0) return;
+							if (last_player === this) last_player = undefined;
+							this.$.slider.disabled = true;
+							this.$.container.classList.toggle('error', false);
+							this.statusMessage = 'Loading...';
+
+							MIDI.Player.loadFile(
+								this.url,
+								function (data) {
+									last_player = that;
+									that.$.slider.value = 0;
+									endTime[that.index] = MIDI.Player.endTime;
+									that.endTime = endTime[that.index];
+									playing[that.index] = false;
+									that.playing = false;
+									that.$.slider.max = parseInt(MIDI.Player.endTime);
+
+									if (that.url === url[that.index]) {
+										that.seek(currentTime[that.index]);
+									} else {
+										currentTime[that.index] = 0;
+										url[that.index] = that.url;
+									}
+
+									that.currentTime = currentTime[that.index];
+									that.$.slider.disabled = false;
+									/**
+									* Fires when MIDI file is loaded.
+									*
+									* @event load
+									*/
+									that.fire('load');
+
+									if (typeof callback === 'function') {
+										callback();
+									}
+								},
+								function (error) {
+									that.$.container.classList.toggle('error', true);
+									that.statusMessage = error;
+								}
+							);
+						},
+						/**
+		         * Formats `milliseconds` as `mm:ss`.
+		         *
+		         * @method minutesAndSeconds
+		         * @param {Number} milliseconds The time in milliseconds to format.
+		         * @returns {String}
+		         */
+						minutesAndSeconds: function (milliseconds) {
+							milliseconds = parseInt(milliseconds);
+							var minutes = (parseInt(milliseconds / 1000) - (parseInt(milliseconds / 1000) % 60)) / 60;
+							var seconds = parseInt(milliseconds / 1000) % 60;
+							return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+						},
+						observe: {
+							'url': 'load'
+						},
+						/**
+		         * Pause playback.
+		         *
+		         * @method pause
+		         */
+						pause: function () {
+							if (last_player !== this) {
+								if (last_player && last_player.playing) last_player.pause();
+								this.load();
+								return;
+							}
+
+							if (MIDI.Player.playing) {
+								MIDI.Player.pause(this);
+								playing[this.index] = false;
+								this.playing = playing[this.index];
+								/**
+								* Fires when playback is paused.
+								*
+								* @event pause
+								*/
+								this.fire('pause');
+							}
+						},
+						/**
+		         * Begin or resume playback.
+		         *
+		         * @method play
+		         */
+						play: function () {
+							var that = this;
+							
+							if (last_player !== this) {
+								if (last_player && last_player.playing) last_player.pause();
+
+								this.load(
+									function () {
+										MIDI.Player.currentTime = currentTime[that.index];
+										that.play();
+									}
+								);
+
+								return;
+							}
+
+							if (!MIDI.Player.playing) {
+								if (MIDI.Player.currentTime > 0) {
+									MIDI.Player.resume(this);
+								} else {
+									MIDI.Player.start(this);
+								}
+
+								playing[this.index] = true;
+								this.playing = playing[this.index];
+								/**
+								* Fires when playback begins or resumes.
+								*
+								* @event play
+								*/
+								this.fire('play');
+							}
+						},
+						playingChanged: function () {
+							if (this !== last_player) {
+								if (this.playing === true) {
+									playing[this.index] = false;
+									this.playing = playing[this.index];
+									return;
+								}
+							} else if (this.playing !== playing[this.index]) {
+								this.playing = playing[this.index];
+								return;
+							}
+						},
+						ready: function () {
+							var that = this;
+							(
+								function () {
+									var index = count;
+									count += 1;
+
+									Object.defineProperty(
+										that,
+										'index',
+										{
+											get: function () {
+												return index;
+											}
+										}
+									);
+								}
+							)();
+						},
+						/**
+		         * Seek to a specific point in the MIDI file.
+		         *
+		         * @method seek
+		         * @param {Number} milliseconds The time in milliseconds to which the player should seek.
+		         */
+						seek: function (milliseconds) {
+							var playing, that = this;
+							if (last_player !== this) {
+								this.load(
+									function () {
+										that.seek(milliseconds);
+									}
+								);
+
+								return;
+							}
+
+							if (!isNaN(milliseconds)) {
+								milliseconds = parseInt(milliseconds);
+
+								if (milliseconds >= 0 && milliseconds <= endTime[this.index]) {
+									playing = this.playing;
+									if (playing) this.pause();
+									this.$.slider.value = milliseconds;
+									if (playing) this.play();
+									return;
+								}
+							}
+
+							if (Math.abs(MIDI.Player.currentTime - this.$.slider.value) > 100) {
+								playing = this.playing;
+								if (playing) this.pause();
+								currentTime[this.index] = MIDI.Player.currentTime = this.$.slider.value;
+								this.currentTime = currentTime[this.index];
+								if (playing) this.play();
+								this.fire('seek');
+								/**
+								* Fires on seek.
+								*
+								* @event seek
+								*/
+							}
+						},
+						/**
+		         * Stop playback.
+		         *
+		         * @method stop
+		         */
+						stop: function () {
+							var that = this;
+
+							if (last_player !== this) {
+								if (last_player && last_player.playing) last_player.pause();
+
+								this.load(
+									function () {
+										that.play();
+										that.stop();
+									}
+								);
+
+								return;
+							}
+
+							if (MIDI.Player.playing || MIDI.Player.currentTime > 0) {
+								MIDI.Player.stop(this);
+								currentTime[this.index] = this.$.slider.value = 0;
+								this.currentTime = currentTime[this.index];
+								playing[this.index] = false;
+								this.playing = playing[this.index];
+								/**
+								* Fires when playback is stopped.
+								*
+								* @event stop
+								*/
+								this.fire('stop');
+							}
+						}
+					}
+				);
+			}
+		)();
+	</script>
+</polymer-element>

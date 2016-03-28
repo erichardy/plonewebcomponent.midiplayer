@@ -12,8 +12,9 @@
       />
 
   <!-- Publish static files -->
-  <browser:resourceDirectory
-      name="plonewebcomponent.midiplayer"
+  <plone:static
+      name="midiplayer"
+      type="plone"
       directory="static"
       />
 

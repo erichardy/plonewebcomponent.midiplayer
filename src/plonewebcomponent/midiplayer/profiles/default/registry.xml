@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<registry>
+
+<!--
+  <records prefix="plone.resources/midijs"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/build/MIDI.js</value>
+  </records>
+-->
+
+  <records prefix="plone.resources/Base64binary"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/inc/shim/Base64binary.js</value>
+  </records>
+
+  <records prefix="plone.resources/WebMIDIAPI"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/inc/shim/WebMIDIAPI.js</value>
+  </records>
+  <records prefix="plone.resources/stream"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/inc/jasmid/stream.js</value>
+  </records>
+  <records prefix="plone.resources/midifile"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/inc/jasmid/midifile.js</value>
+  </records>
+  <records prefix="plone.resources/replayer"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/inc/jasmid/replayer.js</value>
+  </records>
+  <records prefix="plone.resources/audioDetect"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/midi/audioDetect.js</value>
+  </records>
+  <records prefix="plone.resources/gm"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/midi/gm.js</value>
+  </records>
+  <records prefix="plone.resources/loader"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/midi/loader.js</value>
+  </records>
+  <records prefix="plone.resources/plugin-webaudio"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/midi/plugin.webaudio.js</value>
+  </records>
+  <records prefix="plone.resources/plugin-webmidi"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/midi/plugin.webmidi.js</value>
+  </records>
+  <records prefix="plone.resources/player"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/midi/player.js</value>
+  </records>
+  <records prefix="plone.resources/dom_request_script"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/util/dom_request_script.js</value>
+  </records>
+  <records prefix="plone.resources/dom_request_xhr"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/js/util/dom_request_xhr.js</value>
+  </records>
+
+  <records prefix="plone.resources/timer"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/examples/inc/timer.js</value>
+  </records>
+  <records prefix="plone.resources/colorspace"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/examples/inc/colorspace.js</value>
+  </records>
+  <records prefix="plone.resources/event"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/bower_components/MIDI.js/examples/inc/event.js</value>
+  </records>
+ <!-- 
+  <records prefix="plone.resources/main-abctune"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++plone++midiplayer/main-abctune.js</value>
+      <value key="css">
+        <element>++plone++midiplayer/abctune.less</element>
+      </value>
+      
+  </records>
+ -->
+
+
+  <records prefix="plone.bundles/midi-player"
+            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="enabled">True</value>
+    <value key="resources">
+        <element>Base64binary</element>
+		<element>WebMIDIAPI</element>
+		<element>stream</element>
+		<element>midifile</element>
+		<element>replayer</element>
+		<element>audioDetect</element>
+		<element>gm</element>
+		<element>loader</element>
+		<element>plugin-webaudio</element>
+		<element>plugin-webmidi</element>
+		<element>player</element>
+		<element>dom_request_xhr</element>
+		<element>dom_request_script</element>
+		<element>timer</element>
+		<element>colorspace</element>
+		<element>event</element>
+    </value>
+    <value key="jscompilation">++plone++midiplayer/midi-player-compiled.js</value>
+    <!-- 
+    <value key="csscompilation">++plone++wildcard-media/components/mediaelement/build/mediaelementplayer.min.css</value>
+     -->
+    <value key="last_compilation">2015-11-11 00:00:00</value>
+    <value key="compile">True</value>
+    <value key="depends">plone</value>
+  </records>
+
+</registry>

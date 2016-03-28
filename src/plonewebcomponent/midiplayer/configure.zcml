@@ -14,10 +14,6 @@
 
   <include package=".browser" />
 
-  <browser:resourceDirectory
-      name="midiplayer"
-      directory="resources" />
-
   <cmf:registerDirectory name="midi-player" recursive="True"/>
 
   <genericsetup:registerProfile
