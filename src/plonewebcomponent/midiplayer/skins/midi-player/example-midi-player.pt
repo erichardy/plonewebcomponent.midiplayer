@@ -9,14 +9,14 @@
 <body>
 
     <metal:content-core fill-slot="content-core">
-    <span id="SoundFontBase" tal:content="string:${context/portal_url}">sound font base</span>
     <link rel="import" href="++plone++midiplayer/midi-player.html">
     <span tal:define="base string:${context/portal_url};
                       SFlocation string:${base}/++plone++midiplayer/soundfont/;
                       instrument string:acoustic_grand_piano">
       <play-midi tal:attributes="SFlocation string:${SFlocation};
                                  instrument string:${instrument};
-                                 src string:${base}/++plone++midiplayer/ColmanCross1.mid"
+                                 src string:${base}/++plone++midiplayer/ColmanCross1.mid;
+                                 autoplay string:0"
       >
       </play-midi>      
     </span>

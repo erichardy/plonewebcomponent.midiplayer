@@ -6,47 +6,36 @@ A WEB component that provides MIDI file playback.
 -->
 <template id="play-midi">
     <style>
-			:host {
-				display: block;
-			}
-
-			:host::shadow #statusMessage {
-				padding: 0 16px;
-			}
-
-			:host::shadow .error #statusMessage {
-				color: red;
-			}
+       .hidden {
+        display: none;
+       }
+       .shown {
+        display: block;
+        }
 	</style>
 
-  <div id="container">
-  <div id="slider" min="0" max="1" value="0" on-core-change="{{seek}}" disabled="True" flex>Slider</div>
-	<!--
-			<div layout horizontal>
-				<paper-slider id="slider" min="0" max="1" on-core-change="{{seek}}" flex></paper-slider>
-			</div>
-    -->
-	<template if="{{$.slider.disabled}}">
-				<div id="statusMessage">{{statusMessage}}</div>
-	</template>
-	<template if="{{!$.slider.disabled}}">
-		<div layout horizontal>
-			<template if="{{!playing}}">
-				<button on-click="{{play}}">Play</button>
-			</template>
-			<template if="{{playing}}">
-				<button on-click="{{pause}}">Pause</button>
-			</template>
-			<template if="{{currentTime > 0}}">
-				<button on-click="{{stop}}">Stop</button>
-			</template>
-    			<span flex></span>
-	       		<div style="line-height: 40px; padding-right: 16px;">{{minutesAndSeconds(currentTime)}} / {{minutesAndSeconds(endTime)}}</div>
-			    </div>
-	</template>
-  </div>
+  <button id="start" onclick="startPlaying(); return false;">start</button>
+  <button id="pause" onclick="pausePlaying()">Pause</button>
+  <button id="resume" onclick="resumePlaying()">resume</button>
+  <button id="stop" onclick="stopPlaying()">stop</button>
 </template>
 <script>
+    function stopPlaying() {
+        player.stop();
+    };
+    function pausePlaying() {
+    	player.pause();
+    	
+    }
+    function startPlaying() {
+    	player.start();
+    	// template.getElementById("#start").className = 'hidden';
+    	$(":host::shadow #start").css("display", "none");
+    	console.log($(":host::shadow #start"));
+    }
+    function resumePlaying() {
+    	player.resume();
+    }
 	function loadSoundFont(SFlocation, instrument) {
 		// location = portal_url + "/++plone++midiplayer/soundfont/"
 		// instrument = "acoustic_grand_piano"
@@ -56,34 +45,48 @@ A WEB component that provides MIDI file playback.
 				    instrument: "acoustic_grand_piano",
 				    onprogress: function(state, progress) {
 			            // MIDI.loader.setValue(progress * 100);
-			            console.log(state, progress);
+			            // console.log(state, progress);
 			        },
 				    callback: function () {}
 				});
 	};
+	var player = MIDI.Player ;
+	player.addListener(function(data){
+		// console.log(data.now);
+		$("#now").html(data.now);
+	});
+	
 	var midiPlayerDoc = document.currentScript.ownerDocument;
+	var template = midiPlayerDoc.querySelector('#play-midi');
 	var midiPlayer = document.registerElement('play-midi', {
 		prototype: Object.create(HTMLElement.prototype, {
 			 createdCallback: {
 				  value: function() {
 					  var root = this.createShadowRoot();
-					  var template = midiPlayerDoc.querySelector('#play-midi');
+					  // var template = midiPlayerDoc.querySelector('#play-midi');
 					  var clone = document.importNode(template.content, true);
 					  var SFlocation = this.getAttribute("SFlocation");
 					  var instrument = this.getAttribute("instrument");
+					  var autoplay = this.getAttribute("autoplay");
 					  loadSoundFont(SFlocation, instrument);
 					  
 					  var src = this.getAttribute("src");
-					  console.log(SFlocation);
-					  console.log(instrument);
-					  console.log(src);
-					  player = MIDI.Player ;
+					  var autoplay = this.getAttribute("autoplay");
+					  // console.log(SFlocation);
+					  // console.log(instrument);
+					  // console.log(src);
+					  
 					  player.timeWarp = 1;
-					  player.loadFile(src, player.start);
+					  if (autoplay === "1") {
+					      player.loadFile(src, player.start);
+					  }
+					  else {
+						  player.loadFile(src);
+					  }
+					  root.appendChild(clone);
 					}
 				 }
 			 })
 	});
-	
 
-	</script>
+</script>
