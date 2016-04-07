@@ -4,7 +4,7 @@ A WEB component that provides MIDI file playback.
 @element midi-player
 @homepage https://github.com/miztroh/midi-player
 -->
-<template id="play-midi">
+<template id="midi-player">
     <style>
        .hidden {
         display: none;
@@ -14,8 +14,8 @@ A WEB component that provides MIDI file playback.
         }
 	</style>
 
-  <button id="start" onclick="startPlaying(); return false;">start</button>
-  <button id="pause" onclick="pausePlaying()">Pause</button>
+  <button id="start" onclick="startPlaying(this); return false;">start</button>
+  <button id="pause" onclick="pausePlaying(this)">Pause</button>
   <button id="resume" onclick="resumePlaying()">resume</button>
   <button id="stop" onclick="stopPlaying()">stop</button>
 </template>
@@ -23,15 +23,16 @@ A WEB component that provides MIDI file playback.
     function stopPlaying() {
         player.stop();
     };
-    function pausePlaying() {
+    function pausePlaying(tmpl) {
     	player.pause();
-    	
+    	console.log(tmpl);
     }
-    function startPlaying() {
+    function startPlaying(tmpl) {
     	player.start();
     	// template.getElementById("#start").className = 'hidden';
-    	$(":host::shadow #start").css("display", "none");
-    	console.log($(":host::shadow #start"));
+    	console.log(tmpl);
+    	// $(":host::shadow #start").css("display", "none");
+    	// console.log($(":host::shadow #start"));
     }
     function resumePlaying() {
     	player.resume();
@@ -51,18 +52,16 @@ A WEB component that provides MIDI file playback.
 				});
 	};
 	var player = MIDI.Player ;
-	player.addListener(function(data){
-		// console.log(data.now);
-		$("#now").html(data.now);
-	});
+	
 	
 	var midiPlayerDoc = document.currentScript.ownerDocument;
-	var template = midiPlayerDoc.querySelector('#play-midi');
+	var template = midiPlayerDoc.querySelector('#midi-player');
 	var midiPlayer = document.registerElement('play-midi', {
 		prototype: Object.create(HTMLElement.prototype, {
 			 createdCallback: {
 				  value: function() {
 					  var root = this.createShadowRoot();
+					  console.log(this);
 					  // var template = midiPlayerDoc.querySelector('#play-midi');
 					  var clone = document.importNode(template.content, true);
 					  var SFlocation = this.getAttribute("SFlocation");
@@ -84,9 +83,24 @@ A WEB component that provides MIDI file playback.
 						  player.loadFile(src);
 					  }
 					  root.appendChild(clone);
-					}
+					  console.log(root.querySelector("#start"));
+					  start = root.querySelector("#start");
+					  $(start).css("display", "inline");
+					  player.addListener(function(data){
+		                  if (player.playing) {$(start).css("display", "none");}
+		                  else {$(start).css("display", "inline");}
+						    // console.log('-----');
+		                    // console.log(root);
+		                    // $("#now").html(data.now);
+		                });
+				  
+				  }
 				 }
 			 })
+			 
+	
+	
 	});
+	
 
 </script>
