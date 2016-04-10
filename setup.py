@@ -19,7 +19,7 @@ long_description = (
 
 setup(
     name='plonewebcomponent.midiplayer',
-    version='1.0a1',
+    version='0.1',
     description="A web component to play MIDI file/data",
     long_description=long_description,
     # Get more from https://pypi.python.org/pypi?%3Aaction=list_classifiers

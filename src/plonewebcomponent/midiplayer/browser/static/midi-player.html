@@ -18,6 +18,7 @@ A WEB component that provides MIDI file playback.
   <button id="pause" onclick="pausePlaying(this)">Pause</button>
   <button id="resume" onclick="resumePlaying()">resume</button>
   <button id="stop" onclick="stopPlaying()">stop</button>
+  <span id="time"></span>
 </template>
 <script>
     function stopPlaying() {
@@ -29,24 +30,16 @@ A WEB component that provides MIDI file playback.
     }
     function startPlaying(tmpl) {
     	player.start();
-    	// template.getElementById("#start").className = 'hidden';
-    	console.log(tmpl);
-    	// $(":host::shadow #start").css("display", "none");
-    	// console.log($(":host::shadow #start"));
     }
     function resumePlaying() {
     	player.resume();
     }
 	function loadSoundFont(SFlocation, instrument) {
-		// location = portal_url + "/++plone++midiplayer/soundfont/"
-		// instrument = "acoustic_grand_piano"
 		MIDI.loadPlugin(
 				{
 				    soundfontUrl: SFlocation,
 				    instrument: "acoustic_grand_piano",
 				    onprogress: function(state, progress) {
-			            // MIDI.loader.setValue(progress * 100);
-			            // console.log(state, progress);
 			        },
 				    callback: function () {}
 				});
@@ -61,8 +54,6 @@ A WEB component that provides MIDI file playback.
 			 createdCallback: {
 				  value: function() {
 					  var root = this.createShadowRoot();
-					  console.log(this);
-					  // var template = midiPlayerDoc.querySelector('#play-midi');
 					  var clone = document.importNode(template.content, true);
 					  var SFlocation = this.getAttribute("SFlocation");
 					  var instrument = this.getAttribute("instrument");
@@ -71,36 +62,58 @@ A WEB component that provides MIDI file playback.
 					  
 					  var src = this.getAttribute("src");
 					  var autoplay = this.getAttribute("autoplay");
-					  // console.log(SFlocation);
-					  // console.log(instrument);
-					  // console.log(src);
 					  
 					  player.timeWarp = 1;
-					  if (autoplay === "1") {
-					      player.loadFile(src, player.start);
-					  }
-					  else {
-						  player.loadFile(src);
-					  }
+					  
 					  root.appendChild(clone);
-					  console.log(root.querySelector("#start"));
+					  if (autoplay === "1") {
+                          player.loadFile(src, player.start);
+                      }
+                      else {
+                          player.loadFile(src);
+                      }
+
 					  start = root.querySelector("#start");
-					  $(start).css("display", "inline");
+					  pause = root.querySelector("#pause")
+					  resume = root.querySelector("#resume");
+					  stop = root.querySelector("#stop");
+					  more = root.querySelector("#more");
+					  less = root.querySelector("#less");
+					  time = root.querySelector("#time");
 					  player.addListener(function(data){
-		                  if (player.playing) {$(start).css("display", "none");}
-		                  else {$(start).css("display", "inline");}
-						    // console.log('-----');
-		                    // console.log(root);
-		                    // $("#now").html(data.now);
-		                });
-				  
-				  }
-				 }
-			 })
-			 
-	
-	
-	});
+						  end = parseInt(data.end / 1000);
+		                  if (player.playing) {
+		                	  $(start).attr("disabled", "1");
+		                	  $(resume).attr("disabled", "1");
+		                	  $(pause).removeAttr("disabled");
+		                	  $(stop).removeAttr("disabled");
+		                	  $(time).html(parseInt(data.now / 1000) + '/' + end);
+		                	  }
+		                  else {
+		                	  if (data.now === data.end) {
+		                		  $(start).removeAttr("disabled");
+		                		  $(pause).attr("disabled", "1");
+		                		  $(resume).attr("disabled", "1");
+		                		  $(stop).removeAttr("disabled");
+		                	  } else {
+		                		  $(start).attr("disabled", "1");
+		                		  $(pause).attr("disabled", "1");
+		                		  $(resume).removeAttr("disabled");
+		                		  $(stop).removeAttr("disabled");
+		                		   }
+		                	  }
+		                  $(stop).click(function(){
+		                	  $(start).removeAttr("disabled");
+		                	  $(pause).attr("disabled", "1");
+		                	  $(resume).attr("disabled", "1");
+		                	  $(stop).attr("disabled", "1");
+		                	  
+		                  });
+		                }); // player.addListener
+				  } // value: function()
+				 } // createdCallback
+			 }) // prototype: Object.create
+	}); // var midiPlayer = document.registerElement
 	
 
 </script>
